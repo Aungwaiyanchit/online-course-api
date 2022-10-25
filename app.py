@@ -10,7 +10,7 @@ from flask_jwt import JWT
 from security import authenticate, identity
 
 from resources.user import CreateUser
-
+from resources.course import CreateCourse
 
 load_dotenv()
 
@@ -34,7 +34,11 @@ jwt = JWT(app, authenticate, identity)
 def create_table():
     db.create_all()
 
+#endpoints for users
 api.add_resource(CreateUser, "/users/create")
+
+#endpoints for courses
+api.add_resource(CreateCourse, "/courses/create")
 
 if __name__ == "__main__":
     from db import db
