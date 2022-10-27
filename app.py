@@ -10,7 +10,8 @@ from flask_jwt import JWT
 from security import authenticate, identity
 
 from resources.user import CreateUser
-from resources.course import CreateCourse
+from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic
+from resources.catagory import CreateCatagory, DeleteCatagory
 
 load_dotenv()
 
@@ -36,9 +37,20 @@ def create_table():
 
 #endpoints for users
 api.add_resource(CreateUser, "/users/create")
+# api.add_resource()
 
 #endpoints for courses
+api.add_resource(CourseLists, "/courses/all")
 api.add_resource(CreateCourse, "/courses/create")
+api.add_resource(UpdateCourse, "/courses/update")
+api.add_resource(DeleteCourse, "/courses/delete")
+api.add_resource(GetCourseByInstructorId, "/courses/getByInstructorId")
+api.add_resource(GetCourseByTopic, "/courses/getByTopic")
+
+#endpoints for catagories
+# api.add_resource('fa', "/catagories/all")
+api.add_resource(CreateCatagory, "/catagories/create")
+api.add_resource(DeleteCatagory, "/catagories/delete")
 
 if __name__ == "__main__":
     from db import db

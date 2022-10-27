@@ -1,25 +1,29 @@
 from models.user import UserModel
 from flask_restful import Resource, reqparse
+from flask_jwt import jwt_required
 
 class CreateUser(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument(
         'username',
         type=str,
+        required=True,
         help="username cannot be empty."
     )
     parser.add_argument(
         'password',
         type=str,
+        required=True,
         help="username cannot be empty."
     )
     parser.add_argument(
         'user_type',
         type=str,
+        required=True,
         help="user type cannot be empty"
     )
    
-
+    jwt_required()
     def post(self):
         data = CreateUser.parser.parse_args()
 
