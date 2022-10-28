@@ -1,3 +1,4 @@
+import datetime
 import os
 from flask import Flask
 from flask_restful import Api
@@ -10,7 +11,7 @@ from flask_jwt import JWT
 from security import authenticate, identity
 
 from resources.user import CreateUser
-from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic
+from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse
 from resources.catagory import CreateCatagory, DeleteCatagory
 
 load_dotenv()
@@ -21,6 +22,7 @@ bcrypt = Bcrypt(app)
 app.debug = True
 
 app.secret_key=os.getenv("SERECT_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"]= datetime.timedelta(minutes=60)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URI")
 app.config["SQLALCHEMY_MODIFICATION"] = False
 
@@ -46,6 +48,7 @@ api.add_resource(UpdateCourse, "/courses/update")
 api.add_resource(DeleteCourse, "/courses/delete")
 api.add_resource(GetCourseByInstructorId, "/courses/getByInstructorId")
 api.add_resource(GetCourseByTopic, "/courses/getByTopic")
+api.add_resource(EnrollCourse, "/courses/enroll")
 
 #endpoints for catagories
 # api.add_resource('fa', "/catagories/all")

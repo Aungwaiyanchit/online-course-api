@@ -1,6 +1,9 @@
+from models.course import CourseModel
 from models.user import UserModel
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
+from db import db
+
 
 class CreateUser(Resource):
     parser = reqparse.RequestParser()
@@ -23,7 +26,7 @@ class CreateUser(Resource):
         help="user type cannot be empty"
     )
    
-    jwt_required()
+    @jwt_required()
     def post(self):
         data = CreateUser.parser.parse_args()
 
@@ -47,3 +50,5 @@ class CreateUser(Resource):
             "status": 201,
             "message": "user created successfully."
         }
+
+

@@ -1,14 +1,16 @@
-from email import parser
+from flask import request
 from models.course import CourseModel
 from models.user import UserModel
 from flask_restful import Resource, reqparse
 from models.topic import TopicModel
 from flask_jwt import jwt_required
+from db import db
+import werkzeug
 
 
 class CourseLists(Resource):
 
-    jwt_required()
+    @jwt_required()
     def get(self):
         courses = CourseModel.get_courses_lists()
         for c in courses:
@@ -48,13 +50,20 @@ class CreateCourse(Resource):
         action='append',
         help="tags must be lists"
     )
+    parser.add_argument(
+        "img_url",
+        type=str,
+        location='files'
+    )
+    
 
-    jwt_required()
+    @jwt_required()
     def post(self):
         data = CreateCourse.parser.parse_args()
         user = UserModel.find_user_by_user_id(data["instructor_id"])
         if user.user_type != "instructor":
             return { "message": "student cannot create course." }
+        
         new_course = CourseModel(data["name"], data["descriptions"], data["catagory_id"], data["instructor_id"], )
         topics = []
         for topic in data["topics"]:
@@ -69,7 +78,7 @@ class CreateCourse(Resource):
                 new_course.topics.append(topic)
             new_course.save_to_db()
         except BaseException as err:
-            return { "message": f"an error occred while creating course. {err}" }, 500
+            return { "message": "an error occred while creating course." }, 500
         
         return { "status": 201, "message": "course created successfully." }
 
@@ -104,7 +113,7 @@ class UpdateCourse(Resource):
         help="tags must be lists"
     )
 
-    jwt_required()
+    @jwt_required()
     def post(self):
         data = CreateCourse.parser.parse_args()
         user = UserModel.find_user_by_user_id(data["instructor_id"])
@@ -138,7 +147,7 @@ class DeleteCourse(Resource):
         help="course_id cannot be empty"
     ) 
 
-    jwt_required()
+    @jwt_required()
     def post(self):
         return
 class GetCourseByInstructorId(Resource):
@@ -150,7 +159,7 @@ class GetCourseByInstructorId(Resource):
         help="Instructor id cannot be empty."
     )
 
-    jwt_required()
+    @jwt_required()
     def post(self):
         data = GetCourseByInstructorId.parser.parse_args()
 
@@ -165,9 +174,42 @@ class GetCourseByTopic(Resource):
         type=str
     )
 
-    jwt_required()
+    @jwt_required()
     def post(self):
         data = GetCourseByTopic.parser.parse_args()
 
         courses = CourseModel.get_course_by_topics(data["topic"])
-        return { "courses": [courses.json() for course in courses] }
+        return { "courses": [course.json() for course in courses] }
+
+
+class EnrollCourse(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "student_id",
+        type=str,
+        required=True,
+        help="student id cannot be blank."
+    )
+    parser.add_argument(
+        "course_id",
+        type=str,
+        required=True,
+        help="student id cannot be blank."
+    )
+
+    @jwt_required()
+    def post(self):
+        data =EnrollCourse.parser.parse_args()
+
+        student = UserModel.find_user_by_user_id(data["student_id"])
+        if student.user_type != "student":
+            return { "message": "only student can enroll course." }
+        
+        already_enroll = UserModel.get_enroll_course(data["course_id"])
+        if already_enroll is not None:
+            return { "message": "course already enrolled." }
+        
+        course = CourseModel.get_course_by_id(data["course_id"])
+        student.courses.append(course)
+        db.session.commit()
+        return { "message": "course enroll successfully." }

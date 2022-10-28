@@ -16,7 +16,7 @@ class UserModel(db.Model):
     username = db.Column(db.String(80))
     password = db.Column(db.String(80))
     user_type = db.Column(db.String())
-    courses = db.relationship('CourseModel', secondary=student_courses, lazy="dynamic", backref='courses')
+    courses = db.relationship('CourseModel', secondary=student_courses, lazy="dynamic", backref='users')
 
     def __init__(self, username, password, user_type):
         self.username = username
@@ -35,7 +35,12 @@ class UserModel(db.Model):
     def find_user_by_user_id(cls, user_id):
         return cls.query.filter_by(id=user_id).first()
     
+    @classmethod
+    def get_enroll_course(cls, id):
+        return cls.query.filter(cls.courses.any(id=id)).first()
+    
     def json(self):
-        return {
-            "id": self.id, "name": self.username
-        }
+        return { "id": self.id, "name": self.username }
+
+
+    

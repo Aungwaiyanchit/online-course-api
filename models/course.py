@@ -57,9 +57,15 @@ class CourseModel(db.Model):
         return update_course
 
     @classmethod
+    def get_course_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()
+        
+    @classmethod
     def get_course_by_instructor_id(cls, instructor_id):
         return cls.query.filter_by(instructor_id=instructor_id)
     
     @classmethod
     def get_course_by_topics(cls, topics):
         return cls.query.filter(CourseModel.topics.any(name=topics)).all()
+    
+    
