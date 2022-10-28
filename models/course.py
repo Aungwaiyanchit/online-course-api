@@ -1,3 +1,4 @@
+import sqlalchemy as sa 
 import uuid
 from db import db
 from models.catagory import CatagoryModel
@@ -17,7 +18,7 @@ class CourseModel(db.Model):
     descriptions = db.Column(db.Text())
     catagory_id = db.Column(db.String(80), db.ForeignKey('catagories.id'))
     instructor_id = db.Column(db.String(80), db.ForeignKey('users.id'))
-    topics = db.relationship('TopicModel', secondary=course_topics, lazy="dynamic", backref='courses')
+    topics = db.relationship('TopicModel', secondary=course_topics, lazy="dynamic", backref='courses', passive_deletes=True)
 
     catagory = db.relationship('CatagoryModel',)
     instructor = db.relationship('UserModel',)
@@ -27,6 +28,7 @@ class CourseModel(db.Model):
         self.descriptions = descriptions
         self.catagory_id = catagory_id
         self.instructor_id = instructor_id
+
 
     def save_to_db(self):
         db.session.add(self)
@@ -59,6 +61,14 @@ class CourseModel(db.Model):
     @classmethod
     def get_course_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
+
+    @classmethod
+    def get_course_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
+
+    @classmethod
+    def get_course_by_name_lists(cls, name):
+        return cls.query.filter(cls.name.like('%'+name+'%'))
         
     @classmethod
     def get_course_by_instructor_id(cls, instructor_id):
@@ -68,4 +78,12 @@ class CourseModel(db.Model):
     def get_course_by_topics(cls, topics):
         return cls.query.filter(CourseModel.topics.any(name=topics)).all()
     
-    
+    @classmethod
+    def update_course(cls, course_id, name, descriptions, catagory_id, topics):
+        update_course = cls.query.filter(CourseModel.id==course_id).update({
+            "name":name,
+            "descriptions":descriptions,
+            "catagory_id":catagory_id,
+        })
+        db.session.commit()
+        return update_course

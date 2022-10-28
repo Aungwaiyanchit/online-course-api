@@ -26,7 +26,7 @@ class CreateUser(Resource):
         help="user type cannot be empty"
     )
    
-    @jwt_required()
+    # @jwt_required()
     def post(self):
         data = CreateUser.parser.parse_args()
 
@@ -52,3 +52,22 @@ class CreateUser(Resource):
         }
 
 
+
+class StudentEnrollCourse(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "student_id",
+        type=str,
+        required=True,
+        help="student id cannot be blank"
+    )
+
+    def post(self):
+        data = StudentEnrollCourse.parser.parse_args()
+
+        student = UserModel.find_user_by_user_id(data["student_id"])
+        if student is None:
+            return { "message": "student not found."}, 404
+        return {
+            "enrolled coures": [c.json() for c in student.courses]
+        }

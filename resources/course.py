@@ -5,7 +5,7 @@ from flask_restful import Resource, reqparse
 from models.topic import TopicModel
 from flask_jwt import jwt_required
 from db import db
-import werkzeug
+
 
 
 class CourseLists(Resource):
@@ -61,10 +61,14 @@ class CreateCourse(Resource):
     def post(self):
         data = CreateCourse.parser.parse_args()
         user = UserModel.find_user_by_user_id(data["instructor_id"])
+        if user is None:
+            return { "message": "invalid user id." }
         if user.user_type != "instructor":
             return { "message": "student cannot create course." }
-        
-        new_course = CourseModel(data["name"], data["descriptions"], data["catagory_id"], data["instructor_id"], )
+        old_course = CourseModel.get_course_by_name(data["name"])
+        if old_course is not None:
+            return { "message": "course name is already exists." }
+        new_course = CourseModel(data["name"], data["descriptions"], data["catagory_id"], data["instructor_id"])
         topics = []
         for topic in data["topics"]:
             old_topic = TopicModel.find_tags_by_name(topic)
@@ -92,6 +96,18 @@ class UpdateCourse(Resource):
         help="course_id cannot be empty"
     )
     parser.add_argument(
+        "instructor_id",
+        type=str,
+        required=True,
+        help="instructor cannot be empty"
+    )
+    parser.add_argument(
+        "catagory_id",
+        type=str,
+        required=True,
+        help="instructor cannot be empty"
+    )
+    parser.add_argument(
         "name",
         type=str,
         help="course cannot be empty."
@@ -102,11 +118,6 @@ class UpdateCourse(Resource):
         help="descriptions cannot be empty."
     )
     parser.add_argument(
-        "instructor_id",
-        type=str,
-        help="instructor_id cannot be empty."
-    )
-    parser.add_argument(
         "topics",
         type=str,
         action='append',
@@ -115,11 +126,11 @@ class UpdateCourse(Resource):
 
     @jwt_required()
     def post(self):
-        data = CreateCourse.parser.parse_args()
+        data = UpdateCourse.parser.parse_args()
         user = UserModel.find_user_by_user_id(data["instructor_id"])
         if user.user_type != "instructor":
-            return { "message": "student cannot create course." }
-        new_course = CourseModel(data["name"], data["descriptions"], data["instructor_id"])
+            return { "message": "student cannot update course." }
+        
         topics = []
         for topic in data["topics"]:
             old_topic = TopicModel.find_tags_by_name(topic)
@@ -128,12 +139,15 @@ class UpdateCourse(Resource):
             else:
                new_topic = TopicModel(topic)
                topics.append(new_topic)
+        
         try:
-            for topic in topics:
-                new_course.topics.append(topic)
-            new_course.save_to_db()
+            CourseModel.update_course(data["course_id"], data["name"], data["descriptions"], data["catagory_id"], topics)
+            course = CourseModel.get_course_by_id(data["course_id"])
+            course.topics = topics
+            db.session.commit()
         except BaseException as err:
-            return { "message": f"an error occred while creating course. {err}" }, 500
+            print(err)
+            return { "message": "an error occured while updating." }, 500
         
         return { "message": "course updated successfully." }
 
@@ -213,3 +227,19 @@ class EnrollCourse(Resource):
         student.courses.append(course)
         db.session.commit()
         return { "message": "course enroll successfully." }
+
+
+class SearchCourse(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "name",
+        type=str,
+        required=True,
+        help="name cannot be blank."
+    )
+
+    def post(self):
+        data = SearchCourse.parser.parse_args()
+
+        courses = CourseModel.get_course_by_name_lists(data["name"])
+        return { "courses": [course.json() for course in courses]}

@@ -10,8 +10,8 @@ from flask_jwt import JWT
 
 from security import authenticate, identity
 
-from resources.user import CreateUser
-from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse
+from resources.user import CreateUser, StudentEnrollCourse
+from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse, SearchCourse
 from resources.catagory import CreateCatagory, DeleteCatagory
 
 load_dotenv()
@@ -22,7 +22,7 @@ bcrypt = Bcrypt(app)
 app.debug = True
 
 app.secret_key=os.getenv("SERECT_KEY")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"]= datetime.timedelta(minutes=60)
+app.config["JWT_EXPIRATION_DELTA"]= datetime.timedelta(minutes=60)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URI")
 app.config["SQLALCHEMY_MODIFICATION"] = False
 
@@ -49,7 +49,8 @@ api.add_resource(DeleteCourse, "/courses/delete")
 api.add_resource(GetCourseByInstructorId, "/courses/getByInstructorId")
 api.add_resource(GetCourseByTopic, "/courses/getByTopic")
 api.add_resource(EnrollCourse, "/courses/enroll")
-
+api.add_resource(SearchCourse, "/courses/search")
+api.add_resource(StudentEnrollCourse, "/courses/enroll/all")
 #endpoints for catagories
 # api.add_resource('fa', "/catagories/all")
 api.add_resource(CreateCatagory, "/catagories/create")
