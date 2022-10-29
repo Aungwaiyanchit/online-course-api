@@ -24,6 +24,7 @@ try:
     prodURI = os.getenv('DATABASE_URL')
     prodURI = prodURI.replace("postgres://", "postgresql://")
     app.config['SQLALCHEMY_DATABASE_URI'] = prodURI
+    # app.config['SQLALCHEMY_DATABASE_URI'] =os.getenv("DEV_DB_URI")
 
 except:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'
@@ -39,6 +40,9 @@ api = Api(app)
 
 jwt = JWTManager(app)
 
+@app.before_first_request
+def create_table():
+    db.create_all()
 
 #endpoints for users
 api.add_resource(CreateUser, "/users/create")
