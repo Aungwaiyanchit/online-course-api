@@ -1,5 +1,6 @@
 import uuid
-from db import db
+import app
+db = app.db
 
 class CatagoryModel(db.Model):
 

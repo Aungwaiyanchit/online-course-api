@@ -3,7 +3,8 @@ from models.user import UserModel
 from flask_restful import Resource, reqparse
 from models.topic import TopicModel
 from flask_jwt_extended import jwt_required
-from db import db
+import app
+db = app.db
 
 
 
