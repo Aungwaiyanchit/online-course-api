@@ -12,7 +12,7 @@ from security import authenticate, identity
 
 from resources.user import CreateUser, StudentEnrollCourse
 from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse, SearchCourse
-from resources.catagory import CreateCatagory, DeleteCatagory
+from resources.catagory import CreateCatagory, DeleteCatagory, CatagoryList
 
 load_dotenv()
 
@@ -51,8 +51,10 @@ api.add_resource(GetCourseByTopic, "/courses/getByTopic")
 api.add_resource(EnrollCourse, "/courses/enroll")
 api.add_resource(SearchCourse, "/courses/search")
 api.add_resource(StudentEnrollCourse, "/courses/enroll/all")
+
+
 #endpoints for catagories
-# api.add_resource('fa', "/catagories/all")
+api.add_resource(CatagoryList, "/catagories/all")
 api.add_resource(CreateCatagory, "/catagories/create")
 api.add_resource(DeleteCatagory, "/catagories/delete")
 

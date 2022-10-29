@@ -8,7 +8,7 @@ class CatagoryModel(db.Model):
     id = db.Column(db.String(80), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(50))
 
-    #courses = db.relationship("CourseModel", lazy="dynamic", backref="catagories")
+    courses = db.relationship("CourseModel", lazy="dynamic", backref="catagories")
 
     def __init__(self, name):
         self.name = name
@@ -23,9 +23,13 @@ class CatagoryModel(db.Model):
         db.session.commit()
         return delete_catagory
 
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
     
     def json(self):
-        return { 'id': self.id, "name": self.name }
+        return { 'id': self.id, "name": self.name, "courses": [ course.id for course in self.courses ] }

@@ -45,3 +45,12 @@ class DeleteCatagory(Resource):
         except:
             return { "status": 200, "message": "an error occured while deleting catagory." }
         return { "status": 200, "message": "catagory successfully deleted." }
+
+class CatagoryList(Resource):
+
+    def get(self):
+        catagories = CatagoryModel.get_all()
+        return {
+            "categories": [catagory.json() for catagory in catagories]
+        }
+        
