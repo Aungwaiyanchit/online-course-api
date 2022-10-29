@@ -1,6 +1,5 @@
 import uuid
-import app
-db = app.db
+from db import db
 
 
 class TopicModel(db.Model):

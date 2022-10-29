@@ -15,7 +15,6 @@ from resources.catagory import CreateCatagory, DeleteCatagory, CatagoryList
 load_dotenv()
 
 
-from flask_sqlalchemy import SQLAlchemy
 
 
 
@@ -42,13 +41,12 @@ flask_uuid.init_app(app)
 api = Api(app)
 
 jwt = JWTManager(app)
-db = SQLAlchemy(app)
 
 
 #endpoints for users
 api.add_resource(CreateUser, "/users/create")
 api.add_resource(UserLogin, "/auth/login")
-# api.add_resource()
+
 
 #endpoints for courses
 api.add_resource(CourseLists, "/courses/all")
@@ -69,4 +67,6 @@ api.add_resource(DeleteCatagory, "/catagories/delete")
 
 
 if __name__ == "__main__":
+    from db import db
+    db.init_app(app)
     app.run(port=5000, debug=True)

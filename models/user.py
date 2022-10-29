@@ -1,5 +1,4 @@
-import app
-db = app.db
+from db import db
 import uuid
 from flask_bcrypt import generate_password_hash
 
