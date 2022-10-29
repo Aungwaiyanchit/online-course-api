@@ -1,6 +1,6 @@
 import sqlalchemy as sa 
 import uuid
-from app import db
+from db import db
 from models.catagory import CatagoryModel
 
 
