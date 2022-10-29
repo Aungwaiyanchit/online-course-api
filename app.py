@@ -23,7 +23,7 @@ app.debug = True
 app.secret_key=os.getenv("SERECT_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"]= datetime.timedelta(hours=1)
 try:
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("PRO_DB_URI")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 except:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DEV_DB_URI")
 app.config["SQLALCHEMY_MODIFICATION"] = False
