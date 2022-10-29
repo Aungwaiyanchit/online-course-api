@@ -3,7 +3,6 @@ import os
 from flask import Flask
 from flask_restful import Api
 from flask_uuid import FlaskUUID
-from db import db
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
@@ -14,6 +13,10 @@ from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId,
 from resources.catagory import CreateCatagory, DeleteCatagory, CatagoryList
 
 load_dotenv()
+
+
+from flask_sqlalchemy import SQLAlchemy
+
 
 
 app = Flask(__name__)
@@ -39,6 +42,8 @@ flask_uuid.init_app(app)
 api = Api(app)
 
 jwt = JWTManager(app)
+
+db = SQLAlchemy()
 
 @app.before_first_request
 def create_table():
