@@ -1,6 +1,6 @@
 from models.catagory import CatagoryModel
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 
 class CreateCatagory(Resource):
     parser = reqparse.RequestParser()

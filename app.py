@@ -6,11 +6,10 @@ from flask_uuid import FlaskUUID
 from db import db
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
-from flask_jwt import JWT
+from flask_jwt_extended import JWTManager
 
-from security import authenticate, identity
 
-from resources.user import CreateUser, StudentEnrollCourse
+from resources.user import CreateUser, StudentEnrollCourse, UserLogin
 from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse, SearchCourse
 from resources.catagory import CreateCatagory, DeleteCatagory, CatagoryList
 
@@ -22,7 +21,7 @@ bcrypt = Bcrypt(app)
 app.debug = True
 
 app.secret_key=os.getenv("SERECT_KEY")
-app.config["JWT_EXPIRATION_DELTA"]= datetime.timedelta(minutes=60)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"]= datetime.timedelta(hours=1)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URI")
 app.config["SQLALCHEMY_MODIFICATION"] = False
 
@@ -31,7 +30,7 @@ flask_uuid.init_app(app)
 
 api = Api(app)
 
-jwt = JWT(app, authenticate, identity)
+jwt = JWTManager(app)
 
 @app.before_first_request
 def create_table():
@@ -39,6 +38,7 @@ def create_table():
 
 #endpoints for users
 api.add_resource(CreateUser, "/users/create")
+api.add_resource(UserLogin, "/auth/login")
 # api.add_resource()
 
 #endpoints for courses
