@@ -20,12 +20,13 @@ app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.debug = True
 
-app.secret_key=os.getenv("SERECT_KEY")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"]= datetime.timedelta(hours=1)
 try:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 except:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DEV_DB_URI")
+
+app.config["JWT_ACCESS_TOKEN_EXPIRES"]= datetime.timedelta(hours=1)
+app.secret_key=os.getenv("SERECT_KEY")
 app.config["SQLALCHEMY_MODIFICATION"] = False
 
 flask_uuid = FlaskUUID()
@@ -57,3 +58,9 @@ api.add_resource(StudentEnrollCourse, "/courses/enroll/all")
 api.add_resource(CatagoryList, "/catagories/all")
 api.add_resource(CreateCatagory, "/catagories/create")
 api.add_resource(DeleteCatagory, "/catagories/delete")
+
+
+if __name__ == "__main__":
+    from db import db
+    db.init_app(app)
+    app.run(port=5000, debug=True)
