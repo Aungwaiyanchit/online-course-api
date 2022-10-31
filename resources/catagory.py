@@ -16,7 +16,7 @@ class CreateCatagory(Resource):
         data = CreateCatagory.parser.parse_args()
         old_catagory = CatagoryModel.find_catagory_by_name(data["name"])
         if old_catagory is not None:
-            return { "status": 409, "message": "catagory name already exisits." }
+            return { "status": 409, "message": "catagory name already exisits." }, 409
         new_catagory = CatagoryModel(data["name"])
         try:
             new_catagory.save_to_db()
@@ -43,7 +43,7 @@ class DeleteCatagory(Resource):
         try:
             CatagoryModel.delete_catagory_by_name(data["name"])
         except:
-            return { "status": 200, "message": "an error occured while deleting catagory." }
+            return { "status": 500, "message": "an error occured while deleting catagory." }, 500
         return { "status": 200, "message": "catagory successfully deleted." }
 
 class CatagoryList(Resource):

@@ -43,11 +43,11 @@ class CreateUser(Resource):
             return {
                 "status": 500,
                 "message": "an error occured while creating user."
-            }
+            } , 500
         return {
             "status": 201,
             "message": "user created successfully."
-        }
+        } , 201
 
 
 
@@ -72,10 +72,10 @@ class UserLogin(Resource):
         user = UserModel.find_user_by_username(data["username"])
        
         if user is None:
-            return { "status": 401, "message": "Invalid Credential."}
+            return { "status": 401, "message": "Invalid Credential."}, 401
         match_password = check_password_hash(user.password, data["password"])
         if not match_password:
-            return { "status": 401, "message": "Invalid Credential."}
+            return { "status": 401, "message": "Invalid Credential."}, 401
         access_token = create_access_token(identity=user.id, fresh=True)
         refresh_token = create_refresh_token(user.id)
         return {

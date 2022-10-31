@@ -59,12 +59,12 @@ class CreateCourse(Resource):
         data = CreateCourse.parser.parse_args()
         user = UserModel.find_user_by_user_id(data["instructor_id"])
         if user is None:
-            return { "message": "invalid user id." }
+            return { "message": "invalid user id." } , 400
         if user.user_type != "instructor":
-            return { "message": "student cannot create course." }
+            return { "message": "student cannot create course." }, 400
         old_course = CourseModel.get_course_by_name(data["name"])
         if old_course is not None:
-            return { "message": "course name is already exists." }
+            return { "message": "course name is already exists." }, 409
         new_course = CourseModel(data["name"], data["descriptions"], data["catagory_id"], data["instructor_id"])
         topics = []
         for topic in data["topics"]:
@@ -81,7 +81,7 @@ class CreateCourse(Resource):
         except BaseException as err:
             return { "message": "an error occred while creating course." }, 500
         
-        return { "status": 201, "message": "course created successfully." }
+        return { "status": 201, "message": "course created successfully." }, 201
 
 
 class UpdateCourse(Resource):
@@ -126,7 +126,7 @@ class UpdateCourse(Resource):
         data = UpdateCourse.parser.parse_args()
         user = UserModel.find_user_by_user_id(data["instructor_id"])
         if user.user_type != "instructor":
-            return { "message": "student cannot update course." }
+            return { "message": "student cannot update course." }, 400
         
         topics = []
         for topic in data["topics"]:
@@ -214,11 +214,11 @@ class EnrollCourse(Resource):
 
         student = UserModel.find_user_by_user_id(data["student_id"])
         if student.user_type != "student":
-            return { "message": "only student can enroll course." }
+            return { "message": "only student can enroll course." }, 400
         
         already_enroll = UserModel.get_enroll_course(data["course_id"])
         if already_enroll is not None:
-            return { "message": "course already enrolled." }
+            return { "message": "course already enrolled." }, 409
         
         course = CourseModel.get_course_by_id(data["course_id"])
         student.courses.append(course)
