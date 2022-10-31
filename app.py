@@ -34,6 +34,7 @@ try:
 except:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'
 
+
 app.config["JWT_ACCESS_TOKEN_EXPIRES"]= datetime.timedelta(hours=1)
 app.secret_key=os.getenv("SERECT_KEY")
 app.config["SQLALCHEMY_MODIFICATION"] = False
