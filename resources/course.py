@@ -12,8 +12,6 @@ class CourseLists(Resource):
     @jwt_required()
     def get(self):
         courses = CourseModel.get_courses_lists()
-        for c in courses:
-            print(c.json())
         return { "courses": [course.json() for course in courses] }
 
 

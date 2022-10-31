@@ -51,6 +51,6 @@ class CatagoryList(Resource):
     def get(self):
         catagories = CatagoryModel.get_all()
         return {
-            "categories": [catagory.json() for catagory in catagories]
+            "categories": [catagory.njson() for catagory in catagories]
         }
         

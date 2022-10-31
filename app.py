@@ -11,7 +11,7 @@ from flask_jwt_extended import JWTManager
 
 
 
-from resources.user import CreateUser, StudentEnrollCourse, UserLogin
+from resources.user import CreateUser, StudentEnrollCourse, UserLogin, UserLists
 from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse, SearchCourse
 from resources.catagory import CreateCatagory, DeleteCatagory, CatagoryList
 
@@ -29,7 +29,6 @@ try:
     prodURI = os.getenv('DATABASE_URL')
     prodURI = prodURI.replace("postgres://", "postgresql://")
     app.config['SQLALCHEMY_DATABASE_URI'] = prodURI
-    # app.config['SQLALCHEMY_DATABASE_URI'] =os.getenv("DEV_DB_URI")
 
 except:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'
@@ -49,6 +48,7 @@ jwt = JWTManager(app)
 
 #endpoints for users
 api.add_resource(CreateUser, "/users/create")
+api.add_resource(UserLists, "/users/all")
 api.add_resource(UserLogin, "/auth/login")
 
 

@@ -1,3 +1,4 @@
+from importlib.resources import Resource
 from db import db
 import uuid
 from flask_bcrypt import generate_password_hash
@@ -39,8 +40,12 @@ class UserModel(db.Model):
     def get_enroll_course(cls, id):
         return cls.query.filter(cls.courses.any(id=id)).first()
     
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+    
     def json(self):
-        return { "id": self.id, "name": self.username }
+        return { "id": self.id, "name": self.username, "type": self.user_type }
 
 
     

@@ -31,5 +31,8 @@ class CatagoryModel(db.Model):
         db.session.add(self)
         db.session.commit()
     
-    def json(self):
+    def njson(self):
         return { 'id': self.id, "name": self.name, "courses": [ course.id for course in self.courses ] }
+
+    def json(self):
+        return { 'id': self.id, "name": self.name }
