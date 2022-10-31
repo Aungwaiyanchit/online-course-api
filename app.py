@@ -25,16 +25,16 @@ app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.debug = True
 
-# try:
-#     prodURI = os.getenv('DATABASE_URL')
-#     prodURI = prodURI.replace("postgres://", "postgresql://")
-#     app.config['SQLALCHEMY_DATABASE_URI'] = prodURI
-#     # app.config['SQLALCHEMY_DATABASE_URI'] =os.getenv("DEV_DB_URI")
+try:
+    prodURI = os.getenv('DATABASE_URL')
+    prodURI = prodURI.replace("postgres://", "postgresql://")
+    app.config['SQLALCHEMY_DATABASE_URI'] = prodURI
+    # app.config['SQLALCHEMY_DATABASE_URI'] =os.getenv("DEV_DB_URI")
 
-# except:
-#     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'
+except:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///mydatabase.db"
+
 app.config["JWT_ACCESS_TOKEN_EXPIRES"]= datetime.timedelta(hours=1)
 app.secret_key=os.getenv("SERECT_KEY")
 app.config["SQLALCHEMY_MODIFICATION"] = False
