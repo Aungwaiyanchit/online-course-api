@@ -6,7 +6,10 @@ from flask_uuid import FlaskUUID
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
-from db import db
+from flask_sqlalchemy import SQLAlchemy
+
+
+
 
 from resources.user import CreateUser, StudentEnrollCourse, UserLogin
 from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse, SearchCourse
@@ -39,7 +42,7 @@ flask_uuid = FlaskUUID()
 flask_uuid.init_app(app)
 
 api = Api(app)
-
+db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
 
@@ -67,10 +70,9 @@ api.add_resource(CreateCatagory, "/catagories/create")
 api.add_resource(DeleteCatagory, "/catagories/delete")
 
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 
 if __name__ == "__main__":
-    db.init_app(app)
     app.run(port=5000, debug=True)

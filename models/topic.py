@@ -1,5 +1,5 @@
 import uuid
-from db import db
+from app import db
 
 
 class TopicModel(db.Model):
