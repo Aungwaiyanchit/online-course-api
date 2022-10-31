@@ -1,11 +1,12 @@
 import datetime
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_restful import Api
 from flask_uuid import FlaskUUID
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 
 
@@ -22,6 +23,7 @@ load_dotenv()
 
 
 app = Flask(__name__)
+CORS(app)
 bcrypt = Bcrypt(app)
 app.debug = True
 
@@ -45,6 +47,10 @@ api = Api(app)
 jwt = JWTManager(app)
 
 
+
+@app.route("/")
+def index():
+    return render_template('index.html')
 
 #endpoints for users
 api.add_resource(CreateUser, "/users/create")
