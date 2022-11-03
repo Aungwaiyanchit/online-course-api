@@ -12,7 +12,7 @@ from flask_cors import CORS
 
 
 
-from resources.user import CreateUser, StudentEnrollCourse, UserLogin, UserLists
+from resources.user import CreateUser, DeleteUser, StudentEnrollCourse, UserLogin, UserLists, TokenRefresh
 from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse, SearchCourse
 from resources.catagory import CreateCatagory, DeleteCatagory, CatagoryList
 
@@ -46,7 +46,12 @@ flask_uuid.init_app(app)
 api = Api(app)
 jwt = JWTManager(app)
 
-
+@jwt.additional_claims_loader
+def add_claims(identity):
+    print('iden', identity)
+    if identity == "9d1b994d-cc60-434b-b045-5bd53e56be3b":
+        return { "is_admin": True }
+    return { "is_admin": False }
 
 @app.route("/")
 def index():
@@ -54,8 +59,11 @@ def index():
 
 #endpoints for users
 api.add_resource(CreateUser, "/users/create")
+api.add_resource(DeleteUser, "/users/delete")
 api.add_resource(UserLists, "/users/all")
+
 api.add_resource(UserLogin, "/auth/login")
+api.add_resource(TokenRefresh, "/auth/refresh")
 
 
 #endpoints for courses
@@ -77,7 +85,3 @@ api.add_resource(DeleteCatagory, "/catagories/delete")
 
 
 
-# if __name__ == "__main__":
-#     from db import db
-#     db.init_app(app)
-#     app.run(port=5000, debug=True)

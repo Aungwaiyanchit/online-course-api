@@ -50,7 +50,6 @@ class CreateCourse(Resource):
     parser.add_argument(
         "img_url",
         type=str,
-        location='files'
     )
     
 
@@ -65,7 +64,7 @@ class CreateCourse(Resource):
         old_course = CourseModel.get_course_by_name(data["name"])
         if old_course is not None:
             return { "message": "course name is already exists." }, 409
-        new_course = CourseModel(data["name"], data["descriptions"], data["catagory_id"], data["instructor_id"])
+        new_course = CourseModel(data["name"], data["descriptions"], data["image_url"], data["catagory_id"], data["instructor_id"])
         topics = []
         for topic in data["topics"]:
             old_topic = TopicModel.find_tags_by_name(topic)
@@ -107,7 +106,12 @@ class UpdateCourse(Resource):
     parser.add_argument(
         "name",
         type=str,
-        help="course cannot be empty."
+        help="name cannot be empty."
+    )
+    parser.add_argument(
+        "image_url",
+        type=str,
+        help="image_url cannot be empty."
     )
     parser.add_argument(
         "descriptions",
@@ -138,7 +142,7 @@ class UpdateCourse(Resource):
                topics.append(new_topic)
         
         try:
-            CourseModel.update_course(data["course_id"], data["name"], data["descriptions"], data["catagory_id"], topics)
+            CourseModel.update_course(data["course_id"], data["name"], data["descriptions"], data["catagory_id"], topics, data["image_url"])
             course = CourseModel.get_course_by_id(data["course_id"])
             course.topics = topics
             db.session.commit()

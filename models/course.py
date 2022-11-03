@@ -16,11 +16,12 @@ class CourseModel(db.Model):
     id = db.Column(db.String(80), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(50))
     descriptions = db.Column(db.Text())
+    image_url = db.Column(db.Text())
     catagory_id = db.Column(db.String(80), db.ForeignKey('catagories.id'))
     instructor_id = db.Column(db.String(80), db.ForeignKey('users.id'))
     topics = db.relationship('TopicModel', secondary=course_topics, lazy="dynamic", backref='courses', passive_deletes=True)
 
-    catagory = db.relationship('CatagoryModel',)
+    catagory = db.relationship('CatagoryModel', overlaps="catagories,courses")
     instructor = db.relationship('UserModel',)
 
     def __init__(self, name, descriptions,catagory_id, instructor_id):
@@ -39,6 +40,7 @@ class CourseModel(db.Model):
             "id": self.id, 
             "name": self.name, 
             "descriptions": self.descriptions,
+            "img_url": self.image_url,
             "catagory": self.catagory.json(),
             "instructor": self.instructor.json(),
             "topics": [topic.name for topic in self.topics]
@@ -49,9 +51,10 @@ class CourseModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def update_course(cls, course_id, name, descriptions, catagory_id):
+    def update_course(cls, course_id, name, descriptions, catagory_id, image_url):
         update_course = cls.query.filter(CourseModel.id==course_id).update({
             "name":name,
+            "image_url": image_url,
             "descriptions":descriptions,
             "catagory_id" : catagory_id,
             })

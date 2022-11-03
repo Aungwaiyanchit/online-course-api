@@ -1,7 +1,7 @@
 from models.user import UserModel
 from flask_restful import Resource, reqparse
 from flask_bcrypt import check_password_hash
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 
 
 class CreateUser(Resource):
@@ -49,6 +49,31 @@ class CreateUser(Resource):
             "message": "user created successfully."
         } , 201
 
+class DeleteUser(Resource):
+    parser = reqparse.RequestParser()
+
+    parser.add_argument(
+        'user_id',
+        type=str,
+        required=True,
+        help="user id cannot be blank."
+    )
+
+    @jwt_required()
+    def post(self):
+        claims = get_jwt()
+        if not claims["is_admin"]:
+            return { "message": "Only admin can delete the user." }, 401
+
+        data = DeleteUser.parser.parse_args()
+        user = UserModel.find_user_by_user_id(data["user_id"])
+        if user is None:
+            return { "status": 404, "message": "user not found" } , 404
+        try:
+            UserModel.delete_user_by_id(data["user_id"])
+        except:
+            return { "status": 500, "message": "an error occuured while deleting user." }, 500
+        return { "message": "user successfully deleted." }
 
 
 class UserLogin(Resource):
@@ -76,6 +101,7 @@ class UserLogin(Resource):
         match_password = check_password_hash(user.password, data["password"])
         if not match_password:
             return { "status": 401, "message": "Invalid Credential."}, 401
+        #payload = {"userid": user.id, "username": user.username, "user_type": user.user_type}
         access_token = create_access_token(identity=user.id, fresh=True)
         refresh_token = create_refresh_token(user.id)
         return {
@@ -84,6 +110,12 @@ class UserLogin(Resource):
             "refresh_token": refresh_token
         }
 
+class TokenRefresh(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        current_user = get_jwt_identity()
+        new_token = create_access_token(identity=current_user, fresh=False)
+        return { 'access_token': new_token }, 200
 
 class UserLists(Resource):
     def get(self):
