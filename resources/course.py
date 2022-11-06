@@ -48,7 +48,7 @@ class CreateCourse(Resource):
         help="tags must be lists"
     )
     parser.add_argument(
-        "img_url",
+        "image_url",
         type=str,
     )
     

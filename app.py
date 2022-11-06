@@ -49,7 +49,7 @@ jwt = JWTManager(app)
 @jwt.additional_claims_loader
 def add_claims(identity):
     print('iden', identity)
-    if identity == "9d1b994d-cc60-434b-b045-5bd53e56be3b":
+    if identity == "87dda76f-83ac-470c-8f75-86ba16d8809a":
         return { "is_admin": True }
     return { "is_admin": False }
 

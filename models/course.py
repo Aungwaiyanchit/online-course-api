@@ -24,9 +24,10 @@ class CourseModel(db.Model):
     catagory = db.relationship('CatagoryModel', overlaps="catagories,courses")
     instructor = db.relationship('UserModel',)
 
-    def __init__(self, name, descriptions,catagory_id, instructor_id):
+    def __init__(self, name, descriptions,image_url, catagory_id, instructor_id):
         self.name = name
         self.descriptions = descriptions
+        self.image_url = image_url
         self.catagory_id = catagory_id
         self.instructor_id = instructor_id
 
