@@ -101,7 +101,6 @@ class UserLogin(Resource):
         match_password = check_password_hash(user.password, data["password"])
         if not match_password:
             return { "status": 401, "message": "Invalid Credential."}, 401
-        #payload = {"userid": user.id, "username": user.username, "user_type": user.user_type}
         access_token = create_access_token(identity=user.id, fresh=True)
         refresh_token = create_refresh_token(user.id)
         return {
@@ -110,6 +109,24 @@ class UserLogin(Resource):
             "refresh_token": refresh_token
         }
 
+class UserById(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'user_id',
+        type=str,
+        required=True,
+        help="user_id cannot be blank"
+    )
+
+    def post(self):
+        data = UserById.parser.parse_args()
+        user = UserModel.find_user_by_user_id(data["user_id"])
+        if user is None:
+            return { "message": "user not found." }, 404
+        return {
+            "status": 200,
+            "user": user.json()
+        }
 class TokenRefresh(Resource):
     @jwt_required(refresh=True)
     def post(self):

@@ -12,7 +12,7 @@ from flask_cors import CORS
 
 
 
-from resources.user import CreateUser, DeleteUser, StudentEnrollCourse, UserLogin, UserLists, TokenRefresh
+from resources.user import CreateUser, DeleteUser, StudentEnrollCourse, UserLogin, UserLists, TokenRefresh, UserById
 from resources.course import CreateCourse, CourseLists, GetCourseByInstructorId, UpdateCourse, DeleteCourse, GetCourseByTopic, EnrollCourse, SearchCourse
 from resources.catagory import CreateCatagory, DeleteCatagory, CatagoryList
 
@@ -61,6 +61,7 @@ def index():
 api.add_resource(CreateUser, "/users/create")
 api.add_resource(DeleteUser, "/users/delete")
 api.add_resource(UserLists, "/users/all")
+api.add_resource(UserById, "/users/getById")
 
 api.add_resource(UserLogin, "/auth/login")
 api.add_resource(TokenRefresh, "/auth/refresh")
